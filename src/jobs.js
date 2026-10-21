@@ -2,7 +2,7 @@ import crypto from "node:crypto";
 
 const jobs = new Map();
 const JOB_TTL_MS = 60 * 60 * 1000;
-const MAX_CONCURRENT = Number(process.env.MAX_CONCURRENT_JOBS || 4);
+const MAX_CONCURRENT = Number(process.env.MAX_CONCURRENT_JOBS || 2);
 
 let running = 0;
 const queue = [];
@@ -34,7 +34,7 @@ function pump() {
       .catch((err) => {
         console.error(`job ${id} failed:`, err);
         job.status = "failed";
-        job.error = err.code === "refusal" || err.code === "max_tokens" ? err.message : "Something went wrong. Please try again.";
+        job.error = ["refusal", "max_tokens", "rate_limited"].includes(err.code) ? err.message : "Something went wrong. Please try again.";
       })
       .finally(() => {
         running--;

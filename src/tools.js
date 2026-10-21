@@ -83,7 +83,7 @@ function prepareHumanize(body) {
         language: languageLabel(language),
         frozen_terms: frozenList(frozen),
       });
-      const out = await callJSON({ system, user: draft.html, effort: "medium" });
+      const out = await callJSON({ system, user: draft.html });
       if (out.unsupported_language) return { unsupported_language: true, detected_lang: out.detected_lang };
 
       const variants = (out.variants || []).filter((v) => v && (v.text || v.html));
@@ -123,7 +123,7 @@ function prepareParaphrase(body) {
         instructions: instructions || "none",
         language: languageLabel(language),
       });
-      const out = await callJSON({ system, user: draft.html, effort: "medium" });
+      const out = await callJSON({ system, user: draft.html });
       const result = { text: out.text, html: out.html, detected_lang: out.detected_lang };
       if (FIDELITY_GATE) {
         const [check] = await judge({ original: draft.html, rewrites: [out.html || out.text], mode: `paraphrase, ${style} style` });
@@ -144,7 +144,7 @@ function prepareGrammar(body) {
     words: draft.words,
     run: async () => {
       const system = render("grammar", { goal, language: languageLabel(language) });
-      const out = await callJSON({ system, user: draft.html, effort: "low" });
+      const out = await callJSON({ system, user: draft.html });
       return { text: out.text, html: out.html, edits: Array.isArray(out.edits) ? out.edits : [] };
     },
   };
@@ -172,7 +172,7 @@ function prepareWriter(body) {
         description: description || "the writer's choice, following the title",
         words,
       });
-      const out = await callJSON({ system, user: `Write the ${WRITER_TYPES[type]} now.`, effort: "medium" });
+      const out = await callJSON({ system, user: `Write the ${WRITER_TYPES[type]} now.` });
       return { text: out.text, html: out.html, word_count: countWords(out.text) };
     },
   };
@@ -182,7 +182,7 @@ function prepareWriter(body) {
 async function judge({ original, rewrites, mode }) {
   const system = render("judge", { mode });
   const user = [`ORIGINAL:\n${original}`, ...rewrites.map((r, i) => `REWRITE ${i}:\n${r}`)].join("\n\n");
-  const out = await callJSON({ system, user, effort: "medium" });
+  const out = await callJSON({ system, user, temperature: 0.1 });
   const byIndex = [];
   for (const s of out.scores || []) {
     if (Number.isInteger(s.index) && s.index >= 0 && s.index < rewrites.length) {

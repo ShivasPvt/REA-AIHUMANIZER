@@ -1,6 +1,6 @@
 # REA AI Humanizer
 
-A web app with four writing tools, all powered by Claude:
+A web app with four writing tools, all powered by Google Gemini (free tier):
 
 | Tool | What it does |
 |---|---|
@@ -17,7 +17,7 @@ Requires Node.js 20.12 or newer.
 
 ```bash
 npm install
-cp .env.example .env   # then add your ANTHROPIC_API_KEY
+cp .env.example .env   # then add your free GEMINI_API_KEY
 npm start              # http://localhost:3000
 ```
 
@@ -28,7 +28,7 @@ npm start              # http://localhost:3000
 ```
 POST /rewrite  ──► validate + charge daily allowance ──► queue job ──► { queued, job_id }
                                                               │
-                                                     worker: prompt → Claude
+                                                     worker: prompt → Gemini
                                                      (humanizer: + judge)
                                                               │
 GET /humanize-jobs/{id}  ◄── poll every 2 s ── { status, data | error }
@@ -36,7 +36,7 @@ GET /humanize-jobs/{id}  ◄── poll every 2 s ── { status, data | error 
 
 - `prompts/` holds the five system prompts (humanizer, judge, paraphraser, grammar, writer). `{{placeholders}}` are filled per request in `src/prompts.js`.
 - `src/tools.js` validates each tool's options and runs its pipeline.
-- `src/llm.js` calls Claude with streaming, which avoids timeouts on long texts. It handles refusals and enables server-side fallbacks.
+- `src/llm.js` calls Gemini (`gemini-flash-latest` by default, which is on the free tier) in JSON mode. It retries rate-limit errors with backoff and reports blocked or cut-off responses.
 - `src/jobs.js` is an in-memory job queue, and `src/allowance.js` tracks a per-visitor daily word allowance. Words are refunded if a job fails.
 - `POST /parse-document` extracts text from `.txt`, `.md` and `.docx` uploads.
 
@@ -82,3 +82,5 @@ When the draft's language is unsupported, `data` is `{ "unsupported_language": t
 ## Production notes
 
 Jobs and allowances live in memory, so they reset on restart and aren't shared across instances. For more than one server, move both to Redis or a database. Add bot protection (for example Cloudflare Turnstile) before exposing it publicly.
+
+The free Gemini tier has low per-minute request limits. Each humanizer run makes two calls (rewrite + judge), and so does the paraphraser while `FIDELITY_GATE` is on. If you hit limits, set `FIDELITY_GATE=off` or use a paid key.

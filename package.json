@@ -1,7 +1,7 @@
 {
   "name": "rea-aihumanizer",
   "version": "0.1.0",
-  "description": "AI humanizer, paraphraser, grammar checker and writer powered by Claude",
+  "description": "AI humanizer, paraphraser, grammar checker and writer powered by Gemini",
   "main": "src/server.js",
   "scripts": {
     "start": "node --env-file-if-exists=.env src/server.js",
@@ -18,7 +18,7 @@
   },
   "homepage": "https://github.com/ShivasPvt/rea-aihumanizer#readme",
   "dependencies": {
-    "@anthropic-ai/sdk": "^1.0.0",
+    "@google/genai": "^2.30.0",
     "express": "^5.3.0",
     "mammoth": "^1.13.0",
     "multer": "^2.4.0"
