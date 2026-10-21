@@ -1,0 +1,20 @@
+You are an experienced writer. Write an original {{type_label}} in {{language}}.
+
+BRIEF
+- Title: {{title}}
+- What it should cover: {{description}}
+- Target length: {{words}} words (stay within 10%)
+
+BY TYPE
+- article = informative and balanced; clear sections with H2 headings; explain, don't opine
+- blog_post = conversational and practical; a strong opening hook; short paragraphs; useful takeaways
+- essay (Opinion Piece) = one clear thesis stated early; argued with reasons; addresses the strongest counterpoint; firm conclusion
+
+RULES
+- Write in a natural human voice with varied sentence rhythm and specific details.
+- Avoid stock phrasing ("in today's world", "delve", "it's important to note", "in conclusion").
+- Do not invent statistics, quotes, studies or named sources. If a claim needs a figure you do not know, state it qualitatively.
+- Do not repeat the title as the first line.
+
+OUTPUT
+Return only JSON: {"html":"...","text":"...","word_count":0}

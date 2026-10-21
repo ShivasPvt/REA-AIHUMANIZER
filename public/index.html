@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>REA AI Humanizer</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>REA AI Humanizer</h1>
+    <p class="sub">Rewrite drafts so they read naturally, without changing what they say.</p>
+  </header>
+
+  <nav class="tabs" role="tablist">
+    <button role="tab" data-tool="humanize" aria-selected="true">Humanizer</button>
+    <button role="tab" data-tool="paraphraser">Paraphraser</button>
+    <button role="tab" data-tool="grammar">Grammar checker</button>
+    <button role="tab" data-tool="generation">AI writer</button>
+  </nav>
+
+  <main>
+    <section class="panel" id="input-panel">
+      <form id="form">
+        <!-- Draft input, shared by humanizer, paraphraser and grammar -->
+        <div id="draft-block">
+          <div class="row between">
+            <label for="draft">Your text</label>
+            <label class="upload">Upload .txt / .md / .docx<input type="file" id="file" accept=".txt,.md,.docx" hidden></label>
+          </div>
+          <textarea id="draft" rows="14" placeholder="Paste your text here…"></textarea>
+          <div class="row between muted small">
+            <span id="word-count">0 words</span>
+            <span id="allowance"></span>
+          </div>
+        </div>
+
+        <div class="options" data-for="humanize">
+          <label>Mode
+            <select name="style">
+              <option value="casual">Normal</option>
+              <option value="structured">Clear &amp; Structured</option>
+            </select>
+          </label>
+          <label class="wide">Protected terms <span class="muted">(comma-separated, kept exactly)</span>
+            <input name="frozen_terms" placeholder="e.g. Acme Cloud, GDPR">
+          </label>
+        </div>
+
+        <div class="options" data-for="paraphraser" hidden>
+          <label>Style
+            <select name="style">
+              <option>standard</option><option>fluent</option><option>formal</option>
+              <option>academic</option><option>simple</option><option>creative</option>
+            </select>
+          </label>
+          <label>Strength
+            <select name="paraphrase_strength">
+              <option>low</option><option selected>medium</option><option>high</option>
+            </select>
+          </label>
+          <label>Length
+            <select name="paraphrase_length">
+              <option>shorter</option><option selected>same</option><option>longer</option>
+            </select>
+          </label>
+          <label class="wide">Frozen terms <span class="muted">(comma-separated, up to 50)</span>
+            <input name="paraphrase_freeze">
+          </label>
+          <label class="wide">Extra instructions <span class="muted">(optional)</span>
+            <input name="paraphrase_instructions" maxlength="500">
+          </label>
+        </div>
+
+        <div class="options" data-for="grammar" hidden>
+          <label>Goal
+            <select name="grammar_goal">
+              <option>general</option><option>academic</option><option>business</option><option>casual</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="options" data-for="generation" hidden>
+          <label>Type
+            <select name="generation_type">
+              <option value="article">Article</option>
+              <option value="blog_post">Blog Post</option>
+              <option value="essay">Opinion Piece</option>
+            </select>
+          </label>
+          <label>Words
+            <input name="generation_words" type="number" min="100" max="3000" step="50" value="600">
+          </label>
+          <label>Language
+            <select name="generation_language" id="writer-language"></select>
+          </label>
+          <label class="wide">Title
+            <input name="generation_title">
+          </label>
+          <label class="wide">Description <span class="muted">(up to 100 characters)</span>
+            <input name="generation_description" maxlength="100">
+          </label>
+        </div>
+
+        <div class="row">
+          <button type="submit" id="submit" class="primary">Humanize</button>
+          <span id="status" class="muted" role="status"></span>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel" id="output-panel" hidden>
+      <div class="row between">
+        <h2>Result</h2>
+        <button type="button" id="copy">Copy</button>
+      </div>
+      <div id="variant-tabs" class="variant-tabs"></div>
+      <div id="fidelity" class="warning" hidden></div>
+      <div id="output" class="output"></div>
+      <div id="edits" hidden>
+        <h3>Changes</h3>
+        <ul id="edit-list"></ul>
+      </div>
+    </section>
+  </main>
+
+  <script src="app.js" type="module"></script>
+</body>
+</html>
