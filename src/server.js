@@ -14,11 +14,15 @@ const app = express();
 const PORT = Number(process.env.PORT || 3000);
 const publicDir = path.join(path.dirname(fileURLToPath(import.meta.url)), "..", "public");
 
-if (process.env.TRUST_PROXY) app.set("trust proxy", process.env.TRUST_PROXY);
+// A number means "trust that many proxy hops" (Render needs 1); otherwise Express parses it as IPs/subnets.
+const trustProxy = process.env.TRUST_PROXY;
+if (trustProxy) app.set("trust proxy", /^\d+$/.test(trustProxy) ? Number(trustProxy) : trustProxy);
 app.use(express.json({ limit: "1mb" }));
 app.use(express.static(publicDir));
 
 const visitorOf = (req) => req.ip;
+
+app.get("/healthz", (req, res) => res.send("ok"));
 
 app.get("/api/config", (req, res) => {
   res.json({ limits: LIMITS, languages: LANGUAGES, daily_words: DAILY_WORDS, remaining_words: remaining(visitorOf(req)) });

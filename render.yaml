@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: rea-aihumanizer
+    runtime: node
+    plan: free
+    branch: main
+    buildCommand: npm ci --omit=dev
+    startCommand: npm start
+    healthCheckPath: /healthz
+    autoDeploy: true
+    envVars:
+      - key: GEMINI_API_KEY
+        sync: false # prompted for in the Render dashboard; never committed
+      - key: NODE_VERSION
+        value: "22"
+      - key: TRUST_PROXY
+        value: "1" # Render sits behind a proxy; needed for per-visitor allowances

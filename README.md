@@ -84,3 +84,13 @@ When the draft's language is unsupported, `data` is `{ "unsupported_language": t
 Jobs and allowances live in memory, so they reset on restart and aren't shared across instances. For more than one server, move both to Redis or a database. Add bot protection (for example Cloudflare Turnstile) before exposing it publicly.
 
 The free Gemini tier has low per-minute request limits. Each humanizer run makes two calls (rewrite + judge), and so does the paraphraser while `FIDELITY_GATE` is on. If you hit limits, set `FIDELITY_GATE=off` or use a paid key.
+
+## Deploy on Render
+
+The repo includes a Render Blueprint (`render.yaml`) for a free Node web service.
+
+1. In the [Render dashboard](https://dashboard.render.com), choose **New → Blueprint** and connect this GitHub repo. Grant Render access to it, since it's private.
+2. Render reads `render.yaml` and asks for `GEMINI_API_KEY`. Paste your free key from [Google AI Studio](https://aistudio.google.com/apikey).
+3. Click **Apply**. The app goes live at `https://rea-aihumanizer.onrender.com` (or a similar URL), and every push to `main` redeploys it.
+
+Render's free plan sleeps after 15 minutes without traffic, so the first request after a pause takes about a minute. Jobs and daily allowances are kept in memory, so they reset whenever the service sleeps or redeploys.
